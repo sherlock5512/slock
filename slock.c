@@ -101,7 +101,8 @@ getCommandOutput(char *output)
 	char c;
 	int i = 0;
 	fgets(output, CMDLENGTH, fp);
-	
+	i = strlen(output);
+	pclose(fp);
 }
 
 static void
