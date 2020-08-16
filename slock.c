@@ -1,6 +1,6 @@
 /* See LICENSE file for license details. */
 #define _XOPEN_SOURCE 500
-#define CMDLENGTH 50
+#define MAXLINE 100
 #if HAVE_SHADOW_H
 #include <shadow.h>
 #endif
@@ -25,7 +25,6 @@
 #include "util.h"
 
 char *argv0;
-
 /* global count to prevent repeated error messages */
 int count_error = 0;
 
@@ -91,23 +90,25 @@ dontkillme(void)
 static void
 getCommandOutput(char *output)
 {
-	FILE *fp;
+	FILE *f;
 
-	fp = popen(MessageCmd, "r");
+	f = fopen(MessageFile, "r");
 
-	if (fp == NULL) {
+	if (f == NULL) {
 		die("slock: popen failed \n");
 	}
-	fgets(output, CMDLENGTH, fp);
-	pclose(fp);
+	fgets(output, MAXLINE, f);
+	fclose(f);
 }
 
 static void
 writemessage(Display *dpy, Window win, int screen)
 {
 	int len, line_len, width, height, s_width, s_height, i, j, k, tab_replace, tab_size;
-	char * cmdOutput = "\0";
-	XGCValues gr_values;
+	char cmdOutput[MAXLINE];
+	//char TestString[50];
+    char lMessage[1000];
+    XGCValues gr_values;
 	XFontStruct *fontinfo;
 	XColor color, dummy;
 	XineramaScreenInfo *xsi;
@@ -139,15 +140,15 @@ writemessage(Display *dpy, Window win, int screen)
 	 * Start formatting and drawing text
 	 */
 	getCommandOutput(cmdOutput);
-	strcat(message , '\n');
-	strcat(message , cmdOutput);
-	len = strlen(message);
+    strncpy(lMessage, message, strlen(message));
+    snprintf(lMessage,500, "%s\n%s",message,cmdOutput );
+    len = strlen(lMessage);
 
 	/* Max max line length (cut at '\n') */
 	line_len = 0;
 	k = 0;
 	for (i = j = 0; i < len; i++) {
-		if (message[i] == '\n') {
+		if (lMessage[i] == '\n') {
 			if (i - j > line_len)
 				line_len = i - j;
 			k++;
@@ -169,20 +170,20 @@ writemessage(Display *dpy, Window win, int screen)
 	}
 
 	height = s_height*3/7 - (k*20)/3;
-	width  = (s_width - XTextWidth(fontinfo, message, line_len))/2;
+	width  = (s_width - XTextWidth(fontinfo, lMessage, line_len))/2;
 
 	/* Look for '\n' and print the text between them. */
 	for (i = j = k = 0; i <= len; i++) {
 		/* i == len is the special case for the last line */
-		if (i == len || message[i] == '\n') {
+		if (i == len || lMessage[i] == '\n') {
 			tab_replace = 0;
-			while (message[j] == '\t' && j < i) {
+			while (lMessage[j] == '\t' && j < i) {
 				tab_replace++;
 				j++;
 			}
 
-			XDrawString(dpy, win, gc, width + tab_size*tab_replace, height + 20*k, message + j, i - j);
-			while (i < len && message[i] == '\n') {
+			XDrawString(dpy, win, gc, width + tab_size*tab_replace, height + 20*k, lMessage + j, i - j);
+			while (i < len && lMessage[i] == '\n') {
 				i++;
 				j = i;
 				k++;

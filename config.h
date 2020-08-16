@@ -12,10 +12,10 @@ static const char *colorname[NUMCOLS] = {
 static const int failonclear = 0;
 
 /* default message */
-static const char * message = "System locked; Enter Correct Password";
+static const char * message = "System locked; Enter Correct Password\0";
 
 /* Command to get message from */
-static const char * MessageCmd = "sh /home/robert/.config/polybar/scripts/get_mocp_status.sh";
+static const char * MessageFile = "/1line";
 
 /* text color */
 static const char * text_color = "#ffffff";
