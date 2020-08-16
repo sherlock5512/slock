@@ -245,11 +245,12 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 {
 	XRRScreenChangeNotifyEvent *rre;
 	char buf[32], passwd[256], *inputhash;
-	int num, screen, running, failure, oldc;
+	int num, screen, running, failure, oldc, loops;
 	unsigned int len, color;
 	KeySym ksym;
 	XEvent ev;
 
+    loops = 0;
 	len = 0;
 	running = 1;
 	failure = 0;
@@ -332,6 +333,15 @@ readpw(Display *dpy, struct xrandr *rr, struct lock **locks, int nscreens,
 			for (screen = 0; screen < nscreens; screen++)
 				XRaiseWindow(dpy, locks[screen]->win);
 		}
+        if (loops >= 60) {
+            for (screen = 0; screen < nscreens; screen++) {
+            XClearWindow(dpy, locks[screen]->win);
+            writemessage(dpy, locks[screen]->win, screen);
+            }
+            loops=0;
+        }else {
+            loops++;
+        }
 	}
 }
 
