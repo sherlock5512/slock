@@ -98,17 +98,15 @@ getCommandOutput(char *output)
 	if (fp == NULL) {
 		die("slock: popen failed \n");
 	}
-	char c;
-	int i = 0;
 	fgets(output, CMDLENGTH, fp);
-	i = strlen(output);
 	pclose(fp);
 }
 
 static void
 writemessage(Display *dpy, Window win, int screen)
 {
-	int len, len2, line_len, width, height, s_width, s_height, i, j, k, tab_replace, tab_size;
+	int len, line_len, width, height, s_width, s_height, i, j, k, tab_replace, tab_size;
+	char cmdOutput = NULL;
 	XGCValues gr_values;
 	XFontStruct *fontinfo;
 	XColor color, dummy;
@@ -140,9 +138,10 @@ writemessage(Display *dpy, Window win, int screen)
 	/*
 	 * Start formatting and drawing text
 	 */
-
+	getCommandOutput(cmdOutput);
+	strcat(message , '\n');
+	strcat(message , cmdOutput);
 	len = strlen(message);
-	len2 = strlen(getCommandOutput);
 
 	/* Max max line length (cut at '\n') */
 	line_len = 0;
