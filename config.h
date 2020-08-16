@@ -15,7 +15,7 @@ static const int failonclear = 0;
 static const char * message = "System locked; Enter Correct Password";
 
 /* Command to get message from */
-static const char * MessageCmd = "";
+static const char * MessageCmd = "sh /home/robert/.config/polybar/scripts/get_mocp_status.sh";
 
 /* text color */
 static const char * text_color = "#ffffff";

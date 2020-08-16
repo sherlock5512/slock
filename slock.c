@@ -106,7 +106,7 @@ static void
 writemessage(Display *dpy, Window win, int screen)
 {
 	int len, line_len, width, height, s_width, s_height, i, j, k, tab_replace, tab_size;
-	char cmdOutput = NULL;
+	char * cmdOutput = "\0";
 	XGCValues gr_values;
 	XFontStruct *fontinfo;
 	XColor color, dummy;
